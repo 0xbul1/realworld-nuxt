@@ -20,3 +20,9 @@ export const createArticle = (data) => {
     data,
   });
 };
+export const getArticle = (slug) => {
+  return request({
+    method: 'GET',
+    url: `api/articles/${slug}`,
+  });
+};

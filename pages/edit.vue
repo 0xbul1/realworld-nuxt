@@ -91,7 +91,7 @@ export default {
       const { data } = await createArticle({
         article: this.article,
       });
-      this.$router.push('/');
+      this.$router.push(`/article/${data.article.slug}`);
     },
     handleAddTag() {
       const tagListText = this.tagListText;

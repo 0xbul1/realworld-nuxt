@@ -2,59 +2,21 @@
   <div class="article-page">
     <div class="banner">
       <div class="container">
-        <h1>How to build webapps that scale</h1>
+        <h1>{{ article.title }}</h1>
 
-        <div class="article-meta">
-          <a href=""><img src="http://i.imgur.com/Qr71crq.jpg"/></a>
-          <div class="info">
-            <a href="" class="author">Eric Simons</a>
-            <span class="date">January 20th</span>
-          </div>
-          <button class="btn btn-sm btn-outline-secondary">
-            <i class="ion-plus-round"></i>
-            &nbsp; Follow Eric Simons <span class="counter">(10)</span>
-          </button>
-          &nbsp;&nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart"></i>
-            &nbsp; Favorite Post <span class="counter">(29)</span>
-          </button>
-        </div>
+        <article-meta :article="article" />
       </div>
     </div>
 
     <div class="container page">
       <div class="row article-content">
-        <div class="col-md-12">
-          <p>
-            Web development technologies have evolved at an incredible clip over
-            the past few years.
-          </p>
-          <h2 id="introducing-ionic">Introducing RealWorld.</h2>
-          <p>It's a great solution for learning how other frameworks work.</p>
-        </div>
+        <div class="col-md-12" v-html="article.body"></div>
       </div>
 
       <hr />
 
       <div class="article-actions">
-        <div class="article-meta">
-          <a href="profile.html"><img src="http://i.imgur.com/Qr71crq.jpg"/></a>
-          <div class="info">
-            <a href="" class="author">Eric Simons</a>
-            <span class="date">January 20th</span>
-          </div>
-
-          <button class="btn btn-sm btn-outline-secondary">
-            <i class="ion-plus-round"></i>
-            &nbsp; Follow Eric Simons <span class="counter">(10)</span>
-          </button>
-          &nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart"></i>
-            &nbsp; Favorite Post <span class="counter">(29)</span>
-          </button>
-        </div>
+        <article-meta :article="article" />
       </div>
 
       <div class="row">
@@ -128,9 +90,44 @@
 </template>
 
 <script>
+import { getArticle } from '@/api/article';
+import ArticleMeta from '@/components/author-meta';
+import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
+
+const md = new MarkdownIt({
+  highlight: function(str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return (
+          '<pre class="hljs"><code>' +
+          hljs.highlight(lang, str, true).value +
+          '</code></pre>'
+        );
+      } catch (__) {}
+    }
+
+    return (
+      '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
+    );
+  },
+});
 export default {
   name: 'slug',
+  async asyncData({ params }) {
+    // 服务端渲染。asyncData是在组件初始化之前执行，没有this
+    // const { data } = await getArticle(this.$route.params.slug);
+    const { data } = await getArticle(params.slug);
+    data.article.body = md.render(data.article.body);
+    return {
+      article: data.article,
+    };
+  },
+  components: {
+    ArticleMeta,
+  },
 };
 </script>
 
-<style></style>
+<style scoped></style>
