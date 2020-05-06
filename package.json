@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "nuxt"
+    "serve": "nuxt",
+    "build": "nuxt build",
+    "generate": "nuxt generate"
   },
   "keywords": [],
   "author": "",
